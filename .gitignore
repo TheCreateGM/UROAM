@@ -1,0 +1,35 @@
+# Binaries
+bin/
+release/
+*.o
+*.so
+*.a
+*.rpm
+*.src.rpm
+
+# Build
+build/
+lib/
+rpm-build/
+rpmbuild/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Go
+go.sum
+__pycache__/
+
+# Test outputs
+tests/preload_test
+
+# Backup
+*.bak
+*.old

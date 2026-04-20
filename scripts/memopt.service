@@ -1,0 +1,15 @@
+[Unit]
+Description=Universal RAM Optimization Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/memopt-daemon
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+LimitMEMLOCK=infinity
+
+[Install]
+WantedBy=multi-user.target

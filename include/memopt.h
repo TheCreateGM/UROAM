@@ -1,0 +1,103 @@
+#ifndef MEMOPT_H
+#define MEMOPT_H
+
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <sys/mman.h>
+#include <sched.h>
+
+#ifdef HAVE_NUMA
+#include <numa.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Configuration
+#define MEMOPT_POOL_SIZE_DEFAULT (1UL << 30) // 1GB
+#define MEMOPT_PAGE_SIZE 4096
+#define MEMOPT_HUGEPAGE_SIZE (2UL << 20) // 2MB
+
+// Allocation flags
+#define MEMOPT_ALLOC_NONE        0x00
+#define MEMOPT_ALLOC_HUGEPAGE    0x01
+#define MEMOPT_ALLOC_NUMA_AWARE  0x02
+#define MEMOPT_ALLOC_ZEROED      0x04
+#define MEMOPT_ALLOC_SHARED      0x08
+#define MEMOPT_ALLOC_LOW_LATENCY 0x10
+#define MEMOPT_ALLOC_HIGH_THROUGHPUT 0x20
+
+// Memory pool
+typedef struct memopt_pool {
+    void* base;
+    size_t size;
+    size_t used;
+    uint64_t flags;
+    int numa_node;
+    pthread_mutex_t lock;
+    struct memopt_pool* next;
+} memopt_pool_t;
+
+// Memory statistics
+typedef struct memopt_stats {
+    size_t total_allocated;
+    size_t total_freed;
+    size_t pool_used;
+    size_t pool_total;
+    size_t compression_ratio;
+    size_t ksm_pages_shared;
+    size_t ksm_pages_sharing;
+    uint64_t allocation_count;
+    uint64_t free_count;
+} memopt_stats_t;
+
+// Workload types
+typedef enum {
+    MEMOPT_WORKLOAD_GENERAL,
+    MEMOPT_WORKLOAD_AI_INFERENCE,
+    MEMOPT_WORKLOAD_AI_TRAINING,
+    MEMOPT_WORKLOAD_GAMING,
+    MEMOPT_WORKLOAD_BACKGROUND
+} memopt_workload_t;
+
+// Initialization
+int memopt_init(void);
+int memopt_init_with_policy(memopt_workload_t workload);
+void memopt_shutdown(void);
+
+// Allocation API
+void* memopt_alloc(size_t size);
+void* memopt_alloc_flags(size_t size, uint64_t flags);
+void memopt_free(void* ptr);
+void* memopt_realloc(void* ptr, size_t size);
+void* memopt_calloc(size_t nmemb, size_t size);
+
+// Pool management
+memopt_pool_t* memopt_pool_create(size_t size, uint64_t flags, int numa_node);
+void memopt_pool_destroy(memopt_pool_t* pool);
+void* memopt_pool_alloc(memopt_pool_t* pool, size_t size);
+void memopt_pool_free(memopt_pool_t* pool, void* ptr);
+
+// System optimizations
+int memopt_enable_ksm(void);
+int memopt_disable_ksm(void);
+int memopt_set_swappiness(int value);
+int memopt_tune_zswap(void);
+int memopt_enable_hugepages(void);
+
+// NUMA utilities
+int memopt_numa_node_count(void);
+int memopt_numa_node_of_cpu(int cpu);
+size_t memopt_numa_node_memory(int node);
+
+// Statistics
+void memopt_get_stats(memopt_stats_t* stats);
+void memopt_print_stats(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // MEMOPT_H
