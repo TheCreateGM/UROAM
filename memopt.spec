@@ -3,7 +3,7 @@ Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Universal RAM Optimization Layer for AI Workloads on Linux
 License:        MIT
-URL:            https://github.com/TheCreateGM/memopt
+URL:            https://github.com/TheCreateGM/UROAM
 Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  gcc, make, clang, numactl-devel, go >= 1.20
@@ -56,5 +56,5 @@ install -Dm644 scripts/memopt.service %{buildroot}/%{_unitdir}/memopt.service
 %{_unitdir}/memopt.service
 
 %changelog
-* Mon Apr 20 2026 AxoGM <creategm10@gmail.com> - 1.0.0-1
+* Mon Apr 20 2026 AxoGM <creategm10@proton.me> - 1.0.0-1
 - Initial RPM package
