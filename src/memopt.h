@@ -105,11 +105,52 @@ int memopt_disable_ksm(void);
 int memopt_set_swappiness(int value);
 int memopt_tune_zswap(void);
 int memopt_enable_hugepages(void);
+int memopt_disable_hugepages(void);
+
+// Compression (zRAM/zswap)
+int memopt_enable_zram(void);
+int memopt_disable_zram(void);
+int memopt_set_zram_size(const char *size_str);
+int memopt_set_zram_compressor(const char *comp);
+int memopt_get_zram_compression_ratio(float *ratio);
+int memopt_dynamic_tune(void);
+
+// Page deduplication
+int memopt_merge_pages(void *addr, size_t size);
+int memopt_unmerge_pages(void *addr, size_t size);
+int memopt_set_ksm_batch_size(unsigned int size);
+int memopt_set_ksm_scan_interval(unsigned int ms);
+int memopt_start_dedup_monitor(void);
+int memopt_stop_dedup_monitor(void);
+int memopt_conservative_dedup(void);
+int memopt_aggressive_dedup(void);
+int memopt_tune_for_workload(int workload_type);
 
 // NUMA utilities
 int memopt_numa_node_count(void);
 int memopt_numa_node_of_cpu(int cpu);
 size_t memopt_numa_node_memory(int node);
+int memopt_bind_to_node(int node);
+int memopt_alloc_on_node(void **ptr, size_t size, int node);
+int memopt_migrate_pages(void *ptr, size_t size, int from_node, int to_node);
+int memopt_get_mempolicy(int *mode, void **addr, size_t *max_items, int node);
+int memopt_set_mempolicy(int mode, const unsigned long *nmask, unsigned long maxnode);
+int memopt_bind_mempolicy(int node);
+int memopt_interleave_mempolicy(int node_count);
+int memopt_prefer_node_mempolicy(int node);
+void* memopt_numa_aware_alloc(size_t size, int preferred_node);
+void memopt_numa_aware_free(void *ptr, size_t size, int node);
+int memopt_get_local_node(void);
+
+typedef struct {
+    int node_id;
+    size_t total_memory;
+    size_t free_memory;
+    int cpu_count;
+} memopt_numa_node_info_t;
+
+void memopt_numa_stats(memopt_numa_node_info_t *nodes, int *count);
+void memopt_numa_stats_internal(memopt_numa_node_info_t *nodes, int *count);
 
 // Statistics
 void memopt_get_stats(memopt_stats_t* stats);

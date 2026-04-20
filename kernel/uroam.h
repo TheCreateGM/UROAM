@@ -141,6 +141,9 @@ void uroam_pressure_check(void);
 /* hooks.c */
 int uroam_hooks_init(void);
 void uroam_hooks_exit(void);
+void uroam_get_alloc_stats(u64 *mmap_bytes, u64 *brk_bytes, u64 *total_bytes);
+int uroam_enable_hook_tracing(void);
+void uroam_disable_hook_tracing(void);
 
 /* tracking.c */
 int uroam_tracking_init(void);

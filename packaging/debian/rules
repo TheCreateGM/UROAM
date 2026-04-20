@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	mkdir -p build
+	cd build && cmake .. -DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DLIB_INSTALL_DIR=/usr/lib/x86_64-linux-gnu
+
+override_dh_auto_build:
+	cd build && make -j$(nproc)
+
+override_dh_auto_install:
+	cd build && make install DESTDIR=$(CURDIR)/debian/uroam
+
+override_dh_missing:
+	dh_missing --fail-missing

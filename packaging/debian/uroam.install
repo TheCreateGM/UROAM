@@ -1,0 +1,33 @@
+#!/bin/bash
+# UROAM post-installation script for Debian/Ubuntu
+
+set -e
+
+case "$1" in
+    configure)
+        echo "Configuring UROAM..."
+
+        if [ -d /sys/kernel/mm/ksm ]; then
+            echo 10 > /sys/kernel/mm/ksm/sleep_millisecs || true
+            echo 1000 > /sys/kernel/mm/ksm/pages_to_scan || true
+        fi
+
+        if [ -f /sys/kernel/mm/transparent_hugepage/enabled ]; then
+            echo always > /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null || true
+        fi
+
+        ldconfig
+
+        echo "UROAM configured successfully"
+        ;;
+
+    abort-upgrade|abort-remove|abort-configure)
+        echo "UROAM $1 failed"
+        exit 1
+        ;;
+
+    upgrade|failed-upgrade|remove)
+        ;;
+esac
+
+exit 0
