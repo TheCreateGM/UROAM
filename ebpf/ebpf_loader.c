@@ -11,7 +11,7 @@
 #include <linux/perf_event.h>
 #include <linux/hw_breakpoint.h>
 
-#include "memopt.h"
+#include "uroam.h"
 
 #ifdef HAVE_LIBBPF
 #include <bpf/btf.h>

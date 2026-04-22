@@ -6,6 +6,10 @@
 #include <linux/mm.h>
 #include <linux/slab.h>
 
+#ifndef TASK_COMM_LEN
+#define TASK_COMM_LEN 16
+#endif
+
 #define UROAM_MAX_EVENTS 8192
 #define UROAM_ALLOC 1
 #define UROAM_FREE 2
@@ -50,13 +54,13 @@ static inline __u64 get_current_numa_node(void) {
     return 0;
 }
 
-SEC("kprobe/__alloc_pages")
+SEC("kprobe/__alloc_pages_nodemask")
 int BPF_KPROBE(uroam_alloc_pages, gfp_t gfp_mask, unsigned int order,
-              struct page *page)
+              unsigned int nodemask)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
     __u32 tid = bpf_get_current_pid_tgid();
-    __u64 size = (1ULL << (order + 12));
+    __u64 size = (1ULL << (order + PAGE_SHIFT));
     __u64 ts = bpf_ktime_get_ns();
 
     struct alloc_event evt = {};
@@ -101,13 +105,11 @@ int BPF_KPROBE(uroam_free_pages, struct page *page, unsigned int order)
     return 0;
 }
 
-SEC("kprobe/kmem_cache_alloc")
-int BPF_KPROBE(uroam_cache_alloc, struct kmem_cache *cachep,
-               void *ptr, gfp_t gfp_mask)
+SEC("kretprobe/kmem_cache_alloc")
+int BPF_KRETPROBE(uroam_cache_alloc_ret, void *ptr)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
     __u32 tid = bpf_get_current_pid_tgid();
-    __u64 size = cachep->object_size;
     __u64 ts = bpf_ktime_get_ns();
 
     struct alloc_event evt = {};
@@ -115,8 +117,7 @@ int BPF_KPROBE(uroam_cache_alloc, struct kmem_cache *cachep,
     evt.pid = pid;
     evt.tid = tid;
     evt.type = UROAM_ALLOC;
-    evt.size = size;
-    evt.gfp_flags = gfp_mask;
+    evt.size = 0; // We don't know size in kretprobe
     evt.addr = (unsigned long)ptr;
     bpf_get_current_comm(evt.comm, sizeof(evt.comm));
 

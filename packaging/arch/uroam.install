@@ -1,0 +1,3 @@
+usr/lib/uroam/ -> usr/lib/
+urom_cli usr/bin/
+urom_daemon usr/bin/

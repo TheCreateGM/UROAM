@@ -5,32 +5,32 @@ LDFLAGS = -shared
 GO = go
 GOFLAGS = -ldflags "-s -w"
 
-.PHONY: all daemon lib cli clean install
+.PHONY: all daemon cli ebpf kernel clean install
 
-all: daemon lib cli
+all: daemon cli kernel
 
 daemon:
-	cd daemon && $(GO) build $(GOFLAGS) -o ../bin/memopt-daemon
-
-lib: libmemopt.so
-
-libmemopt.so: src/memopt.o src/allocator.o src/pool.o src/numa.o src/ksm.o
-	$(CC) $(LDFLAGS) -o $@ $^ -ldl -lnuma
-
-src/%.o: src/%.c include/%.h
-	$(CC) $(CFLAGS) -c $< -o $@
+	mkdir -p bin
+	cd daemon && $(GO) build $(GOFLAGS) -o ../bin/uroamd
 
 cli:
-	cd cli && $(GO) build $(GOFLAGS) -o ../bin/memopt
+	mkdir -p bin
+	cd cli && $(GO) build $(GOFLAGS) -o ../bin/uroamctl
+
+kernel:
+	cd kernel && make
+
+ebpf:
+	cd ebpf && clang -target bpf -O2 -g -Iinclude -c uroam.bpf.c -o ../bin/uroam.bpf.o
 
 clean:
-	rm -f src/*.o libmemopt.so bin/*
+	rm -rf bin/*
 	cd daemon && $(GO) clean
 	cd cli && $(GO) clean
+	cd kernel && make clean
 
 install:
-	install -D bin/memopt-daemon /usr/local/bin/memopt-daemon
-	install -D bin/memopt /usr/local/bin/memopt
-	install -D libmemopt.so /usr/local/lib/libmemopt.so
-	install -D include/memopt.h /usr/local/include/memopt.h
+	install -D bin/uroamd /usr/local/bin/uroamd
+	install -D bin/uroamctl /usr/local/bin/uroamctl
+	install -D include/uroam.h /usr/local/include/uroam.h
 	ldconfig

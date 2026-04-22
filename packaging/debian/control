@@ -1,34 +1,15 @@
 Source: uroam
-Section: system
+Section: utils
 Priority: optional
-Maintainer: UROAM Team <uroam@example.com>
-Build-Depends: debhelper-compat (= 13), cmake (>= 3.16), gcc, linux-headers-generic, golang-go, python3-dev, libnuma-dev, libbpf-dev
-Standards-Version: 4.6.0
+Maintainer: UROAM Team <team@uroam.example.com>
+Build-Depends: debhelper-compat (= 12), python3, python3-pip, libc6-dev, libssl-dev
+Standards-Version: 4.5.0
+Homepage: https://github.com/example/uroam
 
 Package: uroam
 Architecture: any
-Depends: ${misc:Depends}, libc6 (>= 2.34), libgcc-s1 (>= 3.4), libstdc++6 (>= 5.0)
-Description: Universal RAM Optimization Layer
- A system-level RAM optimization framework for Linux that intelligently
- manages memory usage across AI workloads, gaming, and general applications.
- .
- Features include:
-  - Kernel-level memory tracking via kprobes/ftrace
-  - NUMA-aware allocation in user-space
-  - zRAM/zswap dynamic compression tuning
-  - Page deduplication with KSM
-  - eBPF-based allocation tracing
-  - PyTorch/TensorFlow integration hooks
-  - C/C++ client library
-
-Package: uroam-dbg
-Architecture: any
-Depends: ${misc:Depends}, uroam (= ${source:Version})
-Description: UROAM debug symbols
- Debug symbols for uroam memory optimization framework
-
-Package: uroam-dev
-Architecture: all
-Depends: ${misc:Depends}, uroam (= ${source:Version}), cmake
-Description: UROAM development files
- Development headers and libraries for uroam
+Depends: ${misc:Depends}, ${shlibs:Depends}, python3, python3-pip, libc6
+Description: Unified RAM Optimization Framework
+ A production-grade low-level system framework for RAM optimization
+ on Linux. Provides dynamic memory management, compression,
+ deduplication, and caching across heterogeneous workloads.

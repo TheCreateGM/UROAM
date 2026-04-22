@@ -1,0 +1,6 @@
+{
+    "polkit-agent-launcher-1": {
+        "description": "UROAM Policy Kit Agent",
+        "default": "yes"
+    }
+}

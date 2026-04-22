@@ -1,0 +1,16 @@
+[Unit]
+Description=UROAM Unified RAM Optimization Framework
+Documentation=man:uroam(8)
+After=multi-user.target
+Requires=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/lib/uroam/uroam_daemon.py
+Restart=on-failure
+RestartSec=5
+RuntimeDirectory=uroam
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target
