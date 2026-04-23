@@ -1,0 +1,34 @@
+[package]
+name = "uroam"
+version = "1.0.0"
+edition = "2021"
+authors = ["UROAM Team"]
+description = "UROAM - Unified RAM Optimization and Management Framework"
+license = "GPL-3.0"
+repository = "https://github.com/uroam/uroam"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[lib]
+name = "uroam_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "uroamd"
+path = "src/daemon/main.rs"
+
+[[bin]]
+name = "ramctl"
+path = "src/cli/main.rs"
