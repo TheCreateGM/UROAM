@@ -3,11 +3,17 @@ pub mod compression;
 pub mod classification;
 pub mod optimization;
 pub mod kernel;
+pub mod gaming;
+pub mod idle;
+pub mod ramdisk;
 
 pub use config::{Config, ProfilesConfig, WorkloadProfile};
 pub use classification::{WorkloadType, ProcessInfo, Classifier, Priority, SystemInfo};
 pub use compression::{ZramManager, ZramDevice, ZswapManager, CompressionStats};
 pub use kernel::{KernelInterface, MemoryPressure, read_pressure, read_memory_info, read_swap_info};
+pub use gaming::GamingOptimizer;
+pub use idle::{IdleOptimizer, IdleConfig, OptimizationLevel};
+pub use ramdisk::{RamDiskManager, RamDiskStats, TmpfsConfig};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OptimizationMode {

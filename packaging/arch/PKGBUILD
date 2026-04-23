@@ -1,0 +1,208 @@
+# Maintainer: UROAM Team <team@uroam.org>
+# Contributor: UROAM Contributors
+
+pkgname=uroam
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Unified RAM Optimization and Management Framework for Linux"
+arch=('x86_64' 'aarch64' 'armv7h' 'riscv64' 'powerpc64le')
+url="https://github.com/uroam/uroam"
+license=('GPL3')
+depends=('glibc' 'systemd')
+makedepends=('cmake' 'ninja' 'gcc>=12' 'clang>=15' 'linux-headers' 'rust>=1.75' 'python>=3.10')
+optdepends=('nvidia-utils: VRAM-RAM coordination'
+            'rocm-utils: AMD GPU support'
+            'intel-compute-runtime: Intel GPU support'
+            'preload: Idle optimization support'
+            'gamemod: Gaming optimizations'
+            'zfs-utils: ZFS support')
+provides=('uroam')
+conflicts=('uroam-git')
+backup=('etc/uroam/uroam.toml')
+install=uroam.install
+
+source=("$pkgname-$pkgver.tar.gz::https://github.com/uroam/$pkgname/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    
+    # Build AAL
+    mkdir -p build/aal
+    gcc -c -std=c11 -I include aal/aal.c -o build/aal/aal.o
+    ar rcs build/aal/libaal.a build/aal/aal.o
+    
+    # Build C library
+    mkdir -p build/lib
+    gcc -c -std=c11 -I include src/shared/memopt.c -o build/lib/memopt.o
+    ar rcs build/lib/libmemopt.a build/lib/memopt.o
+    
+    # Build kernel module (if headers available)
+    if [ -d "/usr/lib/modules/$(uname -r)/build" ]; then
+        cd kmod
+        make
+        cd ..
+    fi
+    
+    # Build Rust components
+    if command -v cargo &> /dev/null; then
+        source $HOME/.cargo/env 2>/dev/null || true
+        cargo build --release
+    fi
+    
+    # Run tests
+    if [ -f build/aal/aal.o ]; then
+        gcc -std=c11 -I include aal/aal.c tests/aal_test.c -o build/aal_test
+        .build/aal_test
+    fi
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    
+    # Install directories
+    install -d "$pkgdir/usr/local/bin"
+    install -d "$pkgdir/usr/local/lib"
+    install -d "$pkgdir/usr/local/include"
+    install -d "$pkgdir/etc/uroam"
+    install -d "$pkgdir/var/log/uroam"
+    install -d "$pkgdir/run/uroam"
+    
+    # Install AAL library
+    if [ -f build/aal/libaal.a ]; then
+        install -m 644 build/aal/libaal.a "$pkgdir/usr/local/lib/"
+    fi
+    
+    # Install C library
+    if [ -f build/lib/libmemopt.a ]; then
+        install -m 644 build/lib/libmemopt.a "$pkgdir/usr/local/lib/"
+    fi
+    
+    # Install headers
+    install -m 644 include/uroam_aal.h "$pkgdir/usr/local/include/"
+    install -m 644 include/uroam.h "$pkgdir/usr/local/include/"
+    
+    # Install kernel module
+    if [ -f kmod/uroam.ko ]; then
+        install -d "$pkgdir/usr/lib/modules/$(uname -r)/kernel/drivers/misc"
+        install -m 644 kmod/uroam.ko "$pkgdir/usr/lib/modules/$(uname -r)/kernel/drivers/misc/"
+    fi
+    
+    # Install Rust binaries
+    if [ -f target/release/uroamd ]; then
+        install -m 755 target/release/uroamd "$pkgdir/usr/local/bin/"
+    fi
+    if [ -f target/release/ramctl ]; then
+        install -m 755 target/release/ramctl "$pkgdir/usr/local/bin/"
+    fi
+    
+    # Install configuration
+    cat > "$pkgdir/etc/uroam/uroam.toml" << 'EOF'
+[general]
+enabled = true
+log_level = "info"
+socket_path = "/run/uroam/uroamd.sock"
+polling_interval_ms = 500
+
+[zram]
+enabled = true
+size_percent = 50
+num_devices = "auto"
+default_algorithm = "lz4"
+
+[zswap]
+enabled = true
+max_pool_percent = 20
+
+[profiles.ai]
+swappiness = 5
+zram_algorithm = "zstd"
+zram_size_percent = 50
+ksm_enabled = true
+ksm_pages_to_scan = 5000
+thp_mode = "always"
+cache_pressure = 100
+background_cgroup_limit = "2G"
+
+[profiles.gaming]
+swappiness = 1
+zram_algorithm = "lz4"
+zram_size_percent = 30
+ksm_enabled = false
+ksm_pages_to_scan = 0
+thp_mode = "always"
+cache_pressure = 50
+background_cgroup_limit = "4G"
+
+[profiles.balanced]
+swappiness = 60
+zram_algorithm = "lz4"
+zram_size_percent = 25
+ksm_enabled = true
+ksm_pages_to_scan = 1000
+thp_mode = "madvise"
+cache_pressure = 100
+background_cgroup_limit = "4G"
+
+[profiles.powersaver]
+swappiness = 90
+zram_algorithm = "zstd"
+zram_size_percent = 60
+ksm_enabled = true
+ksm_pages_to_scan = 3000
+thp_mode = "always"
+cache_pressure = 25
+background_cgroup_limit = "1G"
+
+[tmpfs]
+build_dir = "/tmp/uroam-build"
+build_size = "8G"
+ai_cache_dir = "/tmp/uroam-ai-cache"
+ai_cache_size = "16G"
+
+[idle]
+idle_threshold_secs = 300
+optimization_level = "normal"
+preload_enabled = false
+EOF'
+    
+    # Install systemd service
+    install -d "$pkgdir/usr/lib/systemd/system"
+    cat > "$pkgdir/usr/lib/systemd/system/uroam.service" << 'EOF'
+[Unit]
+Description=UROAM - Unified RAM Optimization and Management Daemon
+After=network.target local-fs.target=
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/uroamd --config /etc/uroam/uroam.toml
+Restart=on-failure
+RestartSec=5
+User=root
+Group=root
+LimitNOFILE=65536
+LimitNPROC=65536
+
+[Install]
+WantedBy=multi-user.target=
+EOF'
+    
+    # Update library cache
+    ldconfig -r "$pkgdir" 2>/dev/null || true
+}
+
+# Custom functions
+post_install() {
+    systemctl daemon-reload 2>/dev/null || true
+    echo "To enable UROAM service: systemctl enable uroam"
+    echo "To start UROAM service: systemctl start uroam"
+}
+
+post_upgrade() {
+    systemctl daemon-reload 2>/dev/null || true
+    systemctl restart uroam 2>/dev/null || true
+}
+
+post_remove() {
+    systemctl daemon-reload 2>/dev/null || true
+}

@@ -1,0 +1,26 @@
+Source: https://github.com/uroam/uroam
+Section: utils
+Priority: optional
+Maintainer: UROAM Team <team@uroam.org>
+Build-Depends: debhelper (>= 10), cmake (>= 3.25), ninja-build, gcc (>= 12) | clang (>= 15), libc6-dev, linux-headers
+Standards-Version: 4.5.0
+Package: uroam
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, systemd, util-linux
+Recommends: preload, gamemod, nvidia-utils [amd64]
+Suggests: nvidia-settings, rocm-utils
+Description: Unified RAM Optimization and Management Framework
+ UROAM is a cross-distribution, cross-architecture Linux framework
+ that transparently optimizes RAM for AI, gaming, development, and
+ general workloads without requiring application changes.
+ .
+ Features:
+  - Architecture Abstraction Layer (AAL) for x86_64, ARM64, ARM32,
+    RISC-V64, PPC64LE, S390X, and LoongArch64
+  - Rust-based daemon (uroamd) with workload classification
+  - Memory compression via ZRAM and Zswap
+  - Gaming optimizations (Steam/Proton/Wine detection)
+  - Idle optimizations with automatic cache management
+  - CLI tool (ramctl) for status and control
+  - TOML-based configuration with multiple profiles
+    (AI, gaming, balanced, powersaver)
