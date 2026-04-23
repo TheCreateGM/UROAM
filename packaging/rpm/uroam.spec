@@ -3,7 +3,7 @@ Version: 1.0.0
 Release: 1%
 Summary: Unified RAM Optimization and Management Framework
 License: GPLv3+
-URL: https://github.com/uroam/uroam
+URL: https://github.com/TheCreateGM/UROAM
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 

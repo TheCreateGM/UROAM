@@ -324,5 +324,5 @@ See CONTRIBUTING.md for guidelines.
 
 ## Support
 
-- GitHub: https://github.com/uroam/uroam
-- Issues: https://github.com/uroam/uroam/issues
+- GitHub: https://github.com/TheCreateGM/UROAM
+- Issues: https://github.com/TheCreateGM/UROAM/issues

@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["UROAM Team"]
 description = "UROAM - Unified RAM Optimization and Management Framework"
 license = "GPL-3.0"
-repository = "https://github.com/uroam/uroam"
+repository = "https://github.com/TheCreateGM/UROAM"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }

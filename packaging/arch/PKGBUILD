@@ -6,7 +6,7 @@ pkgver=1.0.0
 pkgrel=1
 pkgdesc="Unified RAM Optimization and Management Framework for Linux"
 arch=('x86_64' 'aarch64' 'armv7h' 'riscv64' 'powerpc64le')
-url="https://github.com/uroam/uroam"
+url="https://github.com/TheCreateGM/UROAM"
 license=('GPL3')
 depends=('glibc' 'systemd')
 makedepends=('cmake' 'ninja' 'gcc>=12' 'clang>=15' 'linux-headers' 'rust>=1.75' 'python>=3.10')

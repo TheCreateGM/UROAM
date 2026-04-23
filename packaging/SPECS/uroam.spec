@@ -3,7 +3,7 @@ Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Universal RAM Optimization Layer
 License:        GPL-2.0-only
-URL:            https://github.com/uroam/uroam
+URL:            https://github.com/TheCreateGM/UROAM
 BuildRequires:  cmake >= 3.16
 BuildRequires:  gcc-c++
 BuildRequires:  gcc
