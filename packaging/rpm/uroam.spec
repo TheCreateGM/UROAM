@@ -7,9 +7,9 @@ URL: https://github.com/TheCreateGM/UROAM
 Group: System Environment/Daemons
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: rust cargo
-BuildRequires: openssl-devel
-BuildRequires: pkgconfig(openssl)
+
+# For pre-built binary package
+BuildRequires: systemd
 
 %description
 UROAM is a cross-distribution, cross-architecture Linux framework
@@ -39,26 +39,7 @@ This package contains the development files for UROAM.
 %setup -q
 
 %build
-# Build AAL
-gcc -c -std=c11 -I include aal/aal.c -o aal.o
-ar rcs libaal.a aal.o
-
-# Build C library
-gcc -c -std=c11 -I include src/shared/memopt.c -o memopt.o
-ar rcs libmemopt.a memopt.o
-
-# Build kernel module (if kernel-devel is available)
-if [ -d "/lib/modules/%{kernel}/build" ]; then
-    cd kmod
-    make -C /lib/modules/%{kernel}/build M=$(pwd) modules
-    cd ..
-fi
-
-# Build Rust components (if cargo is available)
-if command -v cargo &> /dev/null; then
-    source $HOME/.cargo/env 2>/dev/null || true
-    cargo build --release
-fi
+# No build needed - using pre-built binaries from upstream
 
 %install
 rm -rf %{buildroot}
@@ -71,21 +52,9 @@ mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_rundir}/uroam
 mkdir -p %{buildroot}%{_localstatedir}/log/uroam
 
-# Install AAL library
-install -m 644 libaal.a %{buildroot}%{_libdir}/
-install -m 644 libmemopt.a %{buildroot}%{_libdir}/
-
-# Install headers
-install -m 644 include/uroam_aal.h %{buildroot}%{_includedir}/
-install -m 644 include/uroam.h %{buildroot}%{_includedir}/
-
-# Install Rust binaries (if built)
-if [ -f target/release/uroamd ]; then
-    install -m 755 target/release/uroamd %{buildroot}%{_bindir}/
-fi
-if [ -f target/release/ramctl ]; then
-    install -m 755 target/release/ramctl %{buildroot}%{_bindir}/
-fi
+# Install pre-built Rust binaries (from upstream release)
+install -m 755 target/release/uroamd %{buildroot}%{_bindir}/
+install -m 755 target/release/ramctl %{buildroot}%{_bindir}/
 
 # Install kernel module (if built)
 if [ -f kmod/uroam.ko ]; then
