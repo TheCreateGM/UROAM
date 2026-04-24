@@ -1,10 +1,11 @@
 Name: uroam
 Version: 1.0.0
-Release: 1%
+Release: 1%{?dist}
 Summary: Unified RAM Optimization and Management Framework
 License: GPLv3+
 URL: https://github.com/TheCreateGM/UROAM
 Group: System Environment/Daemons
+Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %description
@@ -26,6 +27,7 @@ Features:
 Summary: Development files for UROAM
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
+Obsoletes: %{name}-devel < %{version>
 
 %description devel
 This package contains the development files for UROAM.
