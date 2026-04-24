@@ -120,35 +120,44 @@ cargo build --release
 ### Installation (Fedora/RHEL)
 
 ```bash
-# Quick install (recommended)
-curl -sL https://github.com/TheCreateGM/UROAM/releases/download/v1.0.0/install-uroam.sh | sudo bash
+# Quick install from COPR (recommended)
+sudo dnf copr enable axogm/uroam
+sudo dnf install uroam uroam-cli
 
-# Or manual download
-wget https://github.com/TheCreateGM/UROAM/releases/download/v1.0.0/uroam-1.0.0-1.fc43.x86_64.rpm
-wget https://github.com/TheCreateGM/UROAM/releases/download/v1.0.0/uroam-cli-1.0.0-1.fc43.x86_64.rpm
-sudo rpm -i uroam-1.0.0-1.fc43.x86_64.rpm uroam-cli-1.0.0-1.fc43.x86_64.rpm
+# Start the daemon
+sudo systemctl enable uroam
+sudo systemctl start uroam
 ```
 
 ### Installation (Debian/Ubuntu)
+```bash
+# Compile from source
+cd daemon && go build -o memopt-daemon . && cd ..
+cd cli && go build -o memopt . && cd ..
+sudo install -Dm755 memopt-daemon /usr/local/bin/
+sudo install -Dm755 memopt /usr/local/bin/
+```
+
+## Usage
 
 ```bash
 # Check status
-ramctl status
+uroamctl status
 
 # View configuration
-ramctl config show
+uroamctl config show
 
 # Monitor in real-time
-ramctl monitor
+uroamctl monitor
 
 # Set profile
-sudo ramctl profile set gaming
+sudo uroamctl profile set gaming
 
 # Trigger optimization
-sudo ramctl optimize
+sudo uroamctl optimize
 
 # Clean memory
-sudo ramctl clean
+sudo uroamctl clean
 ```
 
 ### Daemon Control
