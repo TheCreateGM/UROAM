@@ -8,6 +8,8 @@
 #include <fcntl.h>
 
 #include "uroam.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 static size_t g_total_allocated = 0;
 static size_t g_total_freed = 0;

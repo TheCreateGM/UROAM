@@ -157,6 +157,9 @@ impl Classifier {
                         .unwrap_or(false)
                 })
                 .count() as u32;
+        } else {
+            // If we can't read /sys/block, assume no zram devices
+            self.system_info.zram_devices = 0;
         }
         
         Ok(())

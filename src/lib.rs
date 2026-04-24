@@ -6,6 +6,7 @@ pub mod kernel;
 pub mod gaming;
 pub mod idle;
 pub mod ramdisk;
+pub mod ipc;
 
 pub use config::{Config, ProfilesConfig, WorkloadProfile};
 pub use classification::{WorkloadType, ProcessInfo, Classifier, Priority, SystemInfo};
@@ -14,6 +15,7 @@ pub use kernel::{KernelInterface, MemoryPressure, read_pressure, read_memory_inf
 pub use gaming::GamingOptimizer;
 pub use idle::{IdleOptimizer, IdleConfig, OptimizationLevel};
 pub use ramdisk::{RamDiskManager, RamDiskStats, TmpfsConfig};
+pub use ipc::IpcServer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OptimizationMode {

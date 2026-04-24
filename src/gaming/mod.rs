@@ -95,7 +95,7 @@ impl GamingOptimizer {
         shader_names.iter().any(|name| comm.contains(name))
     }
 
-    pub fn apply_gaming_optimizations(&self) -> std::io::Result<()> {
+    pub fn apply_gaming_optimizations(&mut self) -> std::io::Result<()> {
         if self.state.critical_pids.is_empty() {
             return Ok(());
         }
