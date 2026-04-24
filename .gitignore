@@ -35,4 +35,5 @@ tests/preload_test
 
 # Rust
 target/
-Cargo.lock
+Cargo.lockfedora-*
+fedora_*
