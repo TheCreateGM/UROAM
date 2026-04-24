@@ -7,6 +7,8 @@ URL: https://github.com/TheCreateGM/UROAM
 Group: System Environment/Daemons
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRequires: rust cargo
+Requires: rust stdlib
 
 %description
 UROAM is a cross-distribution, cross-architecture Linux framework
