@@ -117,23 +117,19 @@ source $HOME/.cargo/env
 cargo build --release
 ```
 
-### Installation
+### Installation (Fedora/RHEL)
 
 ```bash
-# Debian/Ubuntu
-sudo dpkg -i ../uroam_1.0.0_amd64.deb
+# Quick install (recommended)
+curl -sL https://github.com/TheCreateGM/UROAM/releases/download/v1.0.0/install-uroam.sh | sudo bash
 
-# Fedora/RHEL
-sudo rpm -ivh ../uroam-1.0.0.x86_64.rpm
-
-# Arch Linux (AUR)
-paru -S uroam
-
-# From source
-sudo ./install.sh
+# Or manual download
+wget https://github.com/TheCreateGM/UROAM/releases/download/v1.0.0/uroam-1.0.0-1.fc43.x86_64.rpm
+wget https://github.com/TheCreateGM/UROAM/releases/download/v1.0.0/uroam-cli-1.0.0-1.fc43.x86_64.rpm
+sudo rpm -i uroam-1.0.0-1.fc43.x86_64.rpm uroam-cli-1.0.0-1.fc43.x86_64.rpm
 ```
 
-### Usage
+### Installation (Debian/Ubuntu)
 
 ```bash
 # Check status
