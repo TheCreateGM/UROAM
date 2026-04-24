@@ -1,0 +1,14 @@
+Warning: Permanently added '3.92.69.32' (ED25519) to the list of known hosts.
+receiving incremental file list
+./
+build.log.gz
+chroot_scan.tar.gz
+configs.tar.gz
+hw_info.log.gz
+root.log.gz
+state.log.gz
+uroam-1.0.0-1%.src.rpm
+uroam.spec
+
+sent 183 bytes  received 95,802 bytes  191,970.00 bytes/sec
+total size is 95,181  speedup is 0.99
